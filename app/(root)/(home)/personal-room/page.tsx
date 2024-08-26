@@ -81,7 +81,8 @@ const Personal_room = () => {
         <Button
           className="bg-dark-3"
           onClick={() => {
-            addData(meetingLink); // Call addData with the meetingLink
+            addData(`https://${meetingLink}`); // Call addData with the meetingLink
+            //console.log()
             toast({
               title: "Link Sent to App",
             });
