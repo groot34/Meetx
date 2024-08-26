@@ -14,7 +14,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { handleSearch } from "@/lib/checker";
 import EndCallButton from "./EndCallButton";
 import Loader from "./Loader";
-import { toast, Toaster } from 'react-hot-toast';
+import { toast, useToast } from "@/components/ui/use-toast";
 
 type CallLayoutType = "grid" | "speaker-left" | "speaker-right";
 
@@ -40,7 +40,7 @@ const MeetingRoom = () => {
   const callingState = useCallCallingState();
 
   {console.log("searchParams-> ", searchParams)};
-
+  const { toast } = useToast()
   useEffect(() => {
     const checkAuthorization = async () => {
       const result = await handleSearch();
@@ -48,9 +48,10 @@ const MeetingRoom = () => {
       setIsLoading(false);
       if (!result) {
         router.push('/');
-        toast.error('Please contact admin to join the meeting', {
-          duration: 3000, // The toast will stay visible for 5 seconds
-        });
+        toast({
+          variant: "destructive",
+          title: "Please Contact admin to Join Meeting or Register on App",
+        })
       }
     };
 
@@ -82,7 +83,7 @@ const MeetingRoom = () => {
 
   return (
     <section className="relative h-screen w-full overflow-hidden pt-4 text-white">
-      <Toaster />
+      
       <div className="relative flex size-full items-center justify-center">
         <div className="flex-size-full max-w-[1000px] items-center">
           <CallLayout />
