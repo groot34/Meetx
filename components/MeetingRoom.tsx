@@ -48,7 +48,9 @@ const MeetingRoom = () => {
       setIsLoading(false);
       if (!result) {
         router.push('/');
-        toast.error('Please contact admin to join the meeting');
+        toast.error('Please contact admin to join the meeting', {
+          duration: 3000, // The toast will stay visible for 5 seconds
+        });
       }
     };
 
