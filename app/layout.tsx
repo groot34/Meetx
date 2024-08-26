@@ -45,7 +45,7 @@ export default function RootLayout({
         <Toaster/>
         {children}
         </body>
-        {/* <h1 className="text-white">Common Baby ye actual main wala</h1> */}
+        {/* <h1 className="text-white"> main wala</h1> */}
       </html>
     </ClerkProvider>
   );

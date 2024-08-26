@@ -9,7 +9,12 @@ import {
   SpeakerLayout,
   useCallStateHooks,
 } from "@stream-io/video-react-sdk";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { handleSearch } from "@/lib/checker";
+import EndCallButton from "./EndCallButton";
+import Loader from "./Loader";
+import { toast, Toaster } from 'react-hot-toast';
 
 type CallLayoutType = "grid" | "speaker-left" | "speaker-right";
 
@@ -20,24 +25,45 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { LayoutList,  Users } from "lucide-react";
-import { useRouter, useSearchParams } from "next/navigation";
-import EndCallButton from "./EndCallButton";
-import Loader from "./Loader";
-
+import { LayoutList, Users } from "lucide-react";
 
 const MeetingRoom = () => {
   const searchParams = useSearchParams();
   const isPersonalRoom = !!searchParams.get('personal');
   const [layout, setLayout] = useState<CallLayoutType>("speaker-left");
   const [showParticipants, setShowParticipants] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isAuthorized, setIsAuthorized] = useState(false);
 
   const router = useRouter();
-
-  const {useCallCallingState}=useCallStateHooks();
+  const { useCallCallingState } = useCallStateHooks();
   const callingState = useCallCallingState();
-  
-  if(callingState !==CallingState.JOINED) return <Loader/>
+
+  {console.log("searchParams-> ", searchParams)};
+
+  useEffect(() => {
+    const checkAuthorization = async () => {
+      const result = await handleSearch();
+      setIsAuthorized(result);
+      setIsLoading(false);
+      if (!result) {
+        router.push('/');
+        toast.error('Please contact admin to join the meeting');
+      }
+    };
+
+    checkAuthorization();
+  }, [router]);
+
+  if (isLoading) {
+    return <Loader />;
+  }
+
+  if (!isAuthorized) {
+    return null;
+  }
+
+  if (callingState !== CallingState.JOINED) return <Loader />;
 
   const CallLayout = () => {
     switch (layout) {
@@ -51,8 +77,10 @@ const MeetingRoom = () => {
         return <SpeakerLayout participantsBarPosition="right" />;
     }
   };
+
   return (
     <section className="relative h-screen w-full overflow-hidden pt-4 text-white">
+      <Toaster />
       <div className="relative flex size-full items-center justify-center">
         <div className="flex-size-full max-w-[1000px] items-center">
           <CallLayout />
@@ -62,16 +90,16 @@ const MeetingRoom = () => {
             'show-block': showParticipants,
           })}
         >
-           <CallParticipantsList onClose={() => setShowParticipants(false)} />
+          <CallParticipantsList onClose={() => setShowParticipants(false)} />
         </div>
       </div>
 
       <div className="fixed bottom-0 flex w-full items-center justify-center gap-5 flex-wrap">
-        <CallControls onLeave={()=>router.push('/')}/>
+        <CallControls onLeave={() => router.push('/')} />
 
         <DropdownMenu>
           <div>
-            <DropdownMenuTrigger className="cursor-pointer rounded-2xl bg=[#19232d] px-4 py-2 hover:bg-[#4c535b]">
+            <DropdownMenuTrigger className="cursor-pointer rounded-2xl bg-[#19232d] px-4 py-2 hover:bg-[#4c535b]">
               <LayoutList size={20} className="text-white" />
             </DropdownMenuTrigger>
           </div>
@@ -101,7 +129,7 @@ const MeetingRoom = () => {
           </div>
         </button>
 
-        {!isPersonalRoom && <EndCallButton/>}
+        {!isPersonalRoom && <EndCallButton />}
       </div>
     </section>
   );

@@ -121,7 +121,7 @@ const MeetingTypeList = () => {
                 setValues({ ...values, description: e.target.value });
               }}
             />
-          </div>
+          </div> 
 
           <div className="flex w-full flex-col gap-2.5">
             <label className="text-base text-normal leading-[22px]">

@@ -1,5 +1,6 @@
 import MeetingTypeList from "@/components/MeetingTypeList";
 import React from "react";
+import { Toaster } from "react-hot-toast";
 
 const Home = () => {
   const now = new Date();
@@ -13,6 +14,8 @@ const Home = () => {
   );
 
   return (
+    <>
+    <Toaster />
     <section className="flex size-full flex-col gap-10 text-white">
       <div className="h-[300px] w-full rounded-[20px] bg-hero bg-cover">
         <div className="flex h-full flex-col justify-between max-md:px-5 max-md:py-8 lg:p-11 md:px-6 md:py-8">
@@ -27,8 +30,9 @@ const Home = () => {
         </div>
       </div>
 
-      <MeetingTypeList/>
+      <MeetingTypeList />
     </section>
+    </>
   );
 };             
 
